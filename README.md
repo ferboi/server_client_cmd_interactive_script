@@ -1,6 +1,6 @@
 # server_client_cmd_interactive_script
 
-This python script can serve either in client or server mode.
+This python script can operate in either client or server mode.
 
 In client mode you can perform 3 functions:
 1. Send a command to the server running on the target machine.
