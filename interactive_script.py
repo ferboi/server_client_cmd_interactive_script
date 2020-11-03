@@ -19,7 +19,7 @@ port = 0
 Port = False
 
 def usage():
-    print("BHP Net Tool")
+    print("CMD terminal Tool")
     print()
     print('There two modes that can be used in this script. 1. Listening mode(server mode), 2. Client mode')
     print('In the client mode you can: \n1. Execute command against a server. \n2. Create a cmd shell with a computer server. \n3. Upload a file to a computer.')
@@ -42,9 +42,10 @@ def usage():
     print("python interactive_script.py -l -p [port_num]")
     print()
     print('Execution examples for client mode: ')
+    print("python interactive_script.py -t [ip_address] -c -p [port_Num]")
     print("python interactive_script.py -t [ip_address] -p [port_num] -u C:\\Users\\user\\Documents\\text.txt")
     print("python interactive_script.py -t [ip_address] -e cat /etc/passwd")
-    print("python interactive_script.py -t [ip_address] -c") 
+     
     
 
     sys.exit()
@@ -82,6 +83,7 @@ def main():
             if '-t' in word:
                 target_boolean = True
                 print('You have entered client mode, Here you can use a shell with a server or send a command to a server.\n')
+                print('\nType "quit or exit" to exit terminal.')
                 continue
             if target_boolean:
                 target = word
@@ -153,8 +155,8 @@ def client_sender():
         try:
             while True:
                 # show a simple prompt
-                cmd = input("<BHP:#> ")
-                if cmd == 'quit':
+                cmd = input("<CMD:#> ")
+                if cmd == 'quit' or cmd == 'exit':
                     client.close()
                     print('[*]Connection Closed. Exiting...')
                     exit()
@@ -240,6 +242,7 @@ def server_loop():
     server.listen(1)
     
     #while True:
+    print('Waiting for a client to connect to server!')
     client_socket, addr = server.accept()
     if client_socket:
         print('[+]A client has connected...')
@@ -265,13 +268,25 @@ def run_command(command):
 
 def client_handler(client_socket, addr):
     while True:
+        # if client_socket != True: 
+        #         print('The client has disconnected')
+        #         exit()
         data = str(client_socket.recv(1024), 'utf-8')
         output = run_command(data)
+        #print(output)
         try:
-            client_socket.send(output)
-        except:
-            client_socket.send(output.encode())
-        print('[+]Replied to client: ' + addr[0])
+            if output == b'':
+                output = b'No output'
+                client_socket.send(output)
+            else:
+                try:
+                    client_socket.send(output)
+                except:
+                    client_socket.send(output.encode())
+                print('[+]Replied to client: ' + addr[0])
+        except BrokenPipeError:
+            print('[*]The client has disconnected')
+            exit()
 
 
 
