@@ -5,7 +5,7 @@ This python script can operate in either client or server mode.
 In client mode you can perform 3 functions:
 1. Send a command to the server running on the target machine.
 2. Create an interactive terminal session with the server on the target machine.
-3. Upload a file to the server on the target machine. (This has not being tested explicitly).
+3. Upload a file to the server on the target machine. (This has not being tested properly).
 
 In server mode it's sole function is to respond to any request from a client.
 
