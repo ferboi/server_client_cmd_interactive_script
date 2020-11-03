@@ -21,7 +21,7 @@ Port = False
 def usage():
     print("CMD terminal Tool")
     print()
-    print('There two modes that can be used in this script. 1. Listening mode(server mode), 2. Client mode')
+    print('There are two modes that can be used in this script. 1. Listening mode(server mode), 2. Client mode')
     print('In the client mode you can: \n1. Execute command against a server. \n2. Create a cmd shell with a computer server. \n3. Upload a file to a computer.')
     print('In the listening mode you communicate with a client by receiving input and sending output.')
     print('Options used by this script are "-l, -t, -p, -e, -u, -c"')
