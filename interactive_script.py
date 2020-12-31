@@ -10,11 +10,9 @@ import select
 # define some global variables
 listen = False
 command = False
-upload = False
 target_boolean = False
 execute = ""
 target = ''
-upload_destination = ""
 port = 0
 Port = False
 
@@ -22,28 +20,24 @@ def usage():
     print("CMD terminal Tool")
     print()
     print('There are two modes that can be used in this script. 1. Listening mode(server mode), 2. Client mode')
-    print('In the client mode you can: \n1. Execute command against a server. \n2. Create a cmd shell with a computer server. \n3. Upload a file to a computer.')
+    print('In the client mode you can: \n1. Execute command against a server. \n2. Create a cmd shell with a computer server.')
     print('In the listening mode you communicate with a client by receiving input and sending output.')
-    print('Options used by this script are "-l, -t, -p, -e, -u, -c"')
+    print('Options used by this script are "-l, -t, -p, -e, -c"')
     print()
-    print('[*]Note: The -l option must be used along side -e, -u, and -c options for them to work.')
     print('[*]Note: The -l option is a requirement to enter listening mode.')
     print('[*]Note: If you do not specify the port for listening mode port 9999 is used by default')
-    print('[*]Note: The -l option should not be used with -t option; therefore it cannot be used with -e, -u and -c options')
+    print('[*]Note: The -l option should not be used with -t option; therefore it cannot be used with -e and -c options')
     print('[*]Note: To enter the client mode, the -t and -p options are requirements')
-    print('[*]Note: If you want to make use of the -e option make it the last option entered along with the command wih spacing where required.')
     print()
     print("-l - listen on [host]:[port] for incoming connections. [*]Usage: -l")
     print("-e --execute=command_to_run - execute the given command upon receiving a connection. [*]Usage: -e command")
     print("-c - initialize a command shell. [*]Usage: -c")
-    print("-u --upload=destination - upon receiving connection upload a file and write to [destination]. [*]Usage: -u [upload_location]")
     print()
     print("How to execute server mode: ")
     print("python interactive_script.py -l -p [port_num]")
     print()
     print('Execution examples for client mode: ')
     print("python interactive_script.py -t [ip_address] -c -p [port_Num]")
-    print("python interactive_script.py -t [ip_address] -p [port_num] -u C:\\Users\\user\\Documents\\text.txt")
     print("python interactive_script.py -t [ip_address] -e cat /etc/passwd")
      
     
@@ -55,15 +49,13 @@ def main():
     global port
     global execute
     global command
-    global upload_destination
     global target
-    global upload
     global Port
     global target_boolean
     
     
     execute_counter = 0
-    # -l -e -c -u -p -t
+    # -l -e -c -p -t
 
     print('Please if you make use of the -e option; make sure that it is the last one enterd along with its arguments.')
     print()
@@ -91,14 +83,6 @@ def main():
 
         if '-c' in argumentlist:
             command = True
-
-        for word in argumentlist:
-            if '-u' in word:
-                upload = True
-                continue
-            if upload:
-                upload_destination = word
-                break
 
         if '-p' in argumentlist:
             for word in argumentlist:
@@ -142,7 +126,6 @@ def main():
 def client_sender():
     global target
     global port
-    global upload
     global execute
     global command
     global upload_destination
@@ -204,31 +187,6 @@ def client_sender():
             print("[*]Check your server instance for more information.")
             client.close()
             # Tear down the connection
-    
-    # now we go into another loop if a command shell was requested
-    # if upload:
-    #     # read in all of the bytes and write to our destination
-    #     file_buffer = ""
-
-    #     # keep reading data until none is available
-    #     while True:
-    #         data = client_socket.recv(1024)
-
-    #         if not data:
-    #             break
-    #         else:
-    #             file_buffer += data
-        
-    #     # now we take these bytes and try to write them out
-    #     try:
-    #         file_descriptor = open(upload_destination, "wb")
-    #         file_descriptor.write(file_buffer)
-    #         file_descriptor.close()
-
-    #         # acknowledge that we wrote the file out
-    #         client_socket.send("successfully saved file to %s\n" %upload_destination)
-    #     except:
-    #         client_socket.send("Failed to save file to %s\n" %upload_destination)
 
 
 
@@ -268,10 +226,11 @@ def run_command(command):
 
 def client_handler(client_socket, addr):
     while True:
-        # if client_socket != True: 
-        #         print('The client has disconnected')
-        #         exit()
-        data = str(client_socket.recv(1024), 'utf-8')
+        try:
+            data = str(client_socket.recv(1024), 'utf-8')
+        except ConnectionAbortedError:
+            print("[*]The client has closed the connection...")
+            exit()
         output = run_command(data)
         #print(output)
         try:
@@ -288,10 +247,4 @@ def client_handler(client_socket, addr):
             print('[*]The client has disconnected')
             exit()
 
-
-
-
-
-
-        
 main()
